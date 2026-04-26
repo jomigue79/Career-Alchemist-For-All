@@ -1,0 +1,13 @@
+{
+  "average_sentence_length": 14.3,
+  "common_power_verbs_used": [
+    "Certified",
+    "Adept",
+    "Proven"
+  ],
+  "technical_vs_general_vocabulary_ratio": {
+    "technical_percentage": 64,
+    "general_percentage": 36
+  },
+  "level_of_formality": 9
+}
