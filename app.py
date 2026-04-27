@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from requirement_extractor import extract_requirements
+from utils import extract_text_from_pdf
 
 # Load environment variables
 load_dotenv()
@@ -42,7 +43,12 @@ with col1:
     st.header("1. Personal Context")
     uploaded_cv = st.file_uploader("Upload your Baseline CV (PDF)", type="pdf")
     if uploaded_cv:
-        st.success("CV uploaded — will be used for tailoring in Sprint 2.")
+        try:
+            cv_text = extract_text_from_pdf(uploaded_cv)
+            st.session_state.cv_text = cv_text
+            st.success("CV uploaded and parsed successfully.")
+        except RuntimeError as e:
+            st.error(str(e))
 
     st.subheader("Tone of Voice")
     st.info("The system will use your predefined Voice Profile for RAG optimization.")
@@ -53,6 +59,8 @@ with col2:
 
     if st.button("Analyze Job Requirements"):
         if jd_text.strip():
+            if len(jd_text) > 15000:
+                st.warning("JD is very long. Consider trimming to the most relevant sections.")
             with st.spinner("Agent 'Analyst' is extracting requirements..."):
                 try:
                     st.session_state.jd_analysis = extract_requirements(jd_text)
