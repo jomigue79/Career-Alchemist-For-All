@@ -1,16 +1,6 @@
 import json
 from google.genai import types
-from utils import gemini_client, GEMINI_PRO_MODEL
-
-VOICE_PARAMS_PATH = "data/voice_params.json"
-
-
-def _load_voice_params():
-    try:
-        with open(VOICE_PARAMS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return "Professional, metric-driven, and active."
+from utils import gemini_client, GEMINI_PRO_MODEL, load_voice_params
 
 
 def get_tailored_cv(cv_text, jd_text):
@@ -18,7 +8,7 @@ def get_tailored_cv(cv_text, jd_text):
     Rewrites CV bullet points tailored to a JD using the stored Voice Profile.
     Returns a parsed dict with 'summary' and 'experience' keys.
     """
-    voice_context = _load_voice_params()
+    voice_context = load_voice_params()
 
     prompt = """
     Act as an elite Technical Career Coach and ATS Specialist.
