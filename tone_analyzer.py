@@ -18,14 +18,20 @@ def extract_voice_parameters(text_sample):
     {text_sample}
     """
 
-    response = gemini_client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
-    raw = response.text.strip()
+    try:
+        response = gemini_client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
+        raw = response.text.strip()
+    except Exception as e:
+        raise RuntimeError(f"Gemini API error during voice analysis: {e}") from e
 
     # Strip markdown code fences if present
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw)
 
-    return json.loads(raw)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Failed to parse voice analysis response as JSON: {e}") from e
 
 if __name__ == "__main__":
     sample_cv_text = """

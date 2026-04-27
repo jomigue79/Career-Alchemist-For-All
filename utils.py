@@ -11,6 +11,7 @@ if not _api_key:
 
 gemini_client = genai.Client(api_key=_api_key)
 GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_PRO_MODEL = "gemini-2.5-pro"
 
 
 def extract_text_from_pdf(uploaded_file):

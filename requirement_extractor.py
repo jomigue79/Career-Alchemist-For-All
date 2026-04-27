@@ -17,8 +17,11 @@ def extract_requirements(jd_text):
     {jd_text}
     """
 
-    response = gemini_client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
-    return response.text
+    try:
+        response = gemini_client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
+        return response.text
+    except Exception as e:
+        raise RuntimeError(f"Gemini API error during requirements extraction: {e}") from e
 
 if __name__ == "__main__":
     target_path = "data/targets/"
