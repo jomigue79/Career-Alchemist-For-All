@@ -68,10 +68,10 @@ if "cv_sections" not in st.session_state:
 # Sidebar - PM² Governance Info
 st.sidebar.title("🧪 Project Info")
 st.sidebar.info("""
-**Project:** Career Alchemist  
-**Phase:** Executing (Sprint 1)  
-**Methodology:** PM²  
-**Manager:** João Correia
+**Project:** Career Alchemist For All  
+**Methodology:** PM² & Scrum  
+**Manager:** João Miguel Correia  
+**Developer:** João Miguel Correia
 """)
 
 # Main UI Header
