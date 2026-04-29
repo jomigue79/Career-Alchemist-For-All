@@ -1,7 +1,5 @@
 libglib2.0-0t64
-libpango-1.0-0t64
-libpangocairo-1.0-0t64
-libcairo2t64
-libgdk-pixbuf-2.0-0t64
+libpango-1.0-0
+libcairo2
 libharfbuzz0b
 fonts-liberation
