@@ -106,10 +106,14 @@ def generate_cv_pdf(
     try:
         from weasyprint import HTML
     except Exception as exc:
-        raise RuntimeError(
-            "WeasyPrint is not available. On Windows, install the GTK+ runtime from "
-            "https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases"
-        ) from exc
+        if sys.platform == "win32":
+            msg = (
+                "WeasyPrint is not available. On Windows, install the GTK+ runtime from "
+                "https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases"
+            )
+        else:
+            msg = f"WeasyPrint is not available: {exc}"
+        raise RuntimeError(msg) from exc
 
     try:
         html_string = render_cv_html(
@@ -139,9 +143,11 @@ def generate_cover_letter_pdf(
     try:
         from weasyprint import HTML
     except Exception as exc:
-        raise RuntimeError(
-            "WeasyPrint is not available. Install the GTK+ runtime on Windows."
-        ) from exc
+        if sys.platform == "win32":
+            msg = "WeasyPrint is not available. Install the GTK+ runtime on Windows."
+        else:
+            msg = f"WeasyPrint is not available: {exc}"
+        raise RuntimeError(msg) from exc
 
     # Escape the text and convert newlines to <br> / paragraphs
     import html as html_lib
