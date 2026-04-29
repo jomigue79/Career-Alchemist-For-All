@@ -22,7 +22,12 @@ def generate_cover_letter(cv_text, jd_text):
     You are an elite Executive Career Strategist and Professional Writer.
 
     Write a modern, high-impact cover letter for the candidate applying to the role
-    described in the Job Description below. Follow this exact 4-paragraph structure:
+    described in the Job Description below. Follow this exact structure:
+
+    LINE 1 — GREETING:
+    Extract the company name from the Job Description and write:
+    "Hello hiring team at [Company Name],"
+    If the company name cannot be found, write: "Hello hiring team,"
 
     PARAGRAPH 1 — THE HOOK:
     State the specific role being applied for. Provide a single, punchy sentence that
@@ -42,6 +47,11 @@ def generate_cover_letter(cv_text, jd_text):
     Professional, confident sign-off. Express readiness for an interview and
     genuine interest in contributing to the team. First-person pronouns are
     expected and encouraged in the cover letter.
+
+    CLOSING LINE:
+    Extract the candidate's full name from the Baseline CV and write:
+    "Best regards,
+    [Candidate Full Name]"
 
     RULES:
     - Adopt the "Executive Achiever" tone: objective, impact-driven, no buzzwords.
