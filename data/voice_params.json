@@ -1,13 +1,12 @@
 {
-  "average_sentence_length": 14.3,
-  "common_power_verbs_used": [
-    "Certified",
-    "Adept",
-    "Proven"
+  "personas": [
+    "Systems Architect: expert, structured, process-oriented, authoritative. Focus on governance, risk mitigation, and scalability.",
+    "Tech Creative: passionate about digital product development. Uses accurate industry terminology — pipelines, sprints, cross-functional, SDLC.",
+    "Unblocker: servant-leadership style. Protects team bandwidth, resolves bottlenecks, translates technical constraints into business value."
   ],
-  "technical_vs_general_vocabulary_ratio": {
-    "technical_percentage": 64,
-    "general_percentage": 36
-  },
-  "level_of_formality": 9
+  "tone": "Professional, confident, and accessible. Avoid hollow buzzwords (e.g. synergy, go-getter). Prefer methodological terms (e.g. cross-functional alignment, phase-gate approvals, RAID management).",
+  "action_verbs": ["Architected", "Orchestrated", "Mitigated", "Deployed", "Standardized", "Aligned", "Governed", "Oversaw", "Engineered", "Coordinated", "Streamlined", "Implemented"],
+  "cv_bullet_rules": "Every bullet MUST start with a strong action verb. Use the Action + Context + Result framework. Keep sentences concise and punchy. NEVER invent metrics, percentages, budgets, or team sizes not stated in the CV — use qualitative impact instead (e.g. 'Ensured full compliance' or 'Accelerated team velocity').",
+  "cover_letter_rules": "Engaging, analytical, and persuasive flow. Structure: (1) Hook — enthusiasm for the specific company + seniority summary; (2-3) Why Me — map CV data directly to JD pain points; (4) Close — confident professional sign-off. No generic openers like 'I am writing to express my interest'.",
+  "anti_hallucination": "The uploaded CV is the absolute truth. Only use experiences, certifications, and skills explicitly present in it. Do NOT infer, guess, or embellish. If a detail is not in the CV, it does not exist."
 }
