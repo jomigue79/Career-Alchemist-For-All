@@ -7,7 +7,7 @@ Flow:
   2. User pastes a Job Description — the app extracts requirements and scores
      the CV-JD match automatically via Gemini.
   3. User generates a tailored CV (PDF-exportable) and a cover letter (PDF-exportable),
-     both written in the candidate's personal voice profile.
+     both rewritten using the CAR framework (Context, Action, Result).
 
 AI agents used:
   - Analyst    (requirement_extractor)  — parses the JD into structured requirements
