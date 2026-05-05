@@ -10,7 +10,7 @@ Output is plain text (no markdown) structured in 4 paragraphs:
   3. Value Proposition (2) — second CV strength mapped to another JD requirement
   4. Call to Action        — confident, human sign-off (first-person allowed here)
 """
-from utils import gemini_client, GEMINI_PRO_MODEL
+from utils import groq_client, GROQ_MODEL
 
 
 def generate_cover_letter(cv_text, jd_text):
@@ -66,10 +66,10 @@ def generate_cover_letter(cv_text, jd_text):
     """ + jd_text
 
     try:
-        response = gemini_client.models.generate_content(
-            model=GEMINI_PRO_MODEL,
-            contents=prompt
+        response = groq_client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}]
         )
-        return response.text.strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
-        raise RuntimeError(f"Gemini API error during cover letter generation: {e}") from e
+        raise RuntimeError(f"Groq API error during cover letter generation: {e}") from e
