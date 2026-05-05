@@ -17,16 +17,8 @@ Strict anti-hallucination rules enforced:
 Returns a dict: { "summary": str, "experience": [{ company, role, period, bullets }] }
 """
 import json
-import re
-from utils import groq_client, GROQ_MODEL
-
-
-def _extract_json(text: str) -> dict:
-    """Extract the first complete JSON object from a string, tolerating any preamble."""
-    match = re.search(r'\{.*\}', text, re.DOTALL)
-    if not match:
-        raise ValueError("No JSON object found in response")
-    return json.loads(match.group())
+from google.genai import types
+from utils import gemini_client, GEMINI_PRO_MODEL
 
 
 def get_tailored_cv(cv_text, jd_text):
@@ -34,49 +26,79 @@ def get_tailored_cv(cv_text, jd_text):
     Rewrites CV bullets and summary tailored to a JD using the CAR framework.
     Returns a parsed dict with 'summary' and 'experience' keys.
     """
-    system_prompt = """You are an elite Executive Career Strategist and ATS Optimization Engine.
-Rewrite the CV's Professional Summary and Experience to achieve a 90%+ ATS match with the Job Description.
+    prompt = """
+    You are an elite Executive Career Strategist and ATS Optimization Engine.
+    Your objective is to rewrite the user's CV to achieve a 90%+ ATS match with the
+    Target Job Description while maintaining absolute factual integrity.
 
-VOICE PHILOSOPHY: Executive Achiever tone — impact-driven, objective, no buzzwords. Implied first-person (NEVER use I/my/we in bullets).
-SYNTAX: Every bullet MUST start with a strong past-tense action verb. Use CAR framework (Context, Action, Result).
-KEYWORDS: Extract top 6-8 mandatory JD keywords. Mirror exact JD terminology in rewrites.
-ANTI-HALLUCINATION:
-- Never invent metrics, figures, or facts not in the CV.
-- Never invent skills not present in the CV.
-- Never sum years across different roles.
+    ## VOICE PHILOSOPHY
+    Adopt the "Executive Achiever" tone:
+    - Impact-Driven: focus on what was ACHIEVED, not just what was done.
+    - Objective & Professional: no buzzwords ("passionate", "synergy", "go-getter").
+    - Industry-Adaptive: mirror the technical or corporate tone of the JD.
+    - Implied First-Person: NEVER use "I", "my", or "we" in CV bullet points.
 
-Return ONLY valid JSON (no markdown, no explanation) with this exact structure:
-{
-  "summary": "3-sentence executive summary tailored to this JD",
-  "experience": [
+    ## SYNTACTIC RULES
+    - Every bullet point MUST begin with a strong past-tense action verb
+      (e.g. Architected, Orchestrated, Spearheaded, Mitigated, Streamlined, Executed).
+    - Structure every bullet using the CAR Framework (Context, Action, Result):
+        BAD: "Helped the team make the database faster."
+        GOOD: "Optimised database architecture, reducing query latency and improving overall system performance."
+    - Exact Keyword Mirroring: if the JD says "Cross-functional Leadership" and the CV says
+      "Led different teams", rewrite to "Provided cross-functional leadership...".
+
+    ## STRICT ANTI-HALLUCINATION POLICY
+    - DO NOT INVENT METRICS: if no specific numbers exist in the CV, use qualitative impact
+      (e.g. "Significantly reduced processing time" not "Reduced processing time by 40%").
+    - DO NOT INVENT SKILLS: if a JD skill has no basis in the CV, do not add it.
+    - DO NOT INVENT EXPERIENCE: only optimise jobs, degrees, and certifications in the CV.
+    - NEVER sum years across roles (e.g. do not write "10 years PM experience" if those years
+      span different job titles — reference each role's own period instead).
+
+    ## EXECUTION STEPS
+
+    STEP 1 — JD KEYWORD EXTRACTION (internal, do not output):
+    - Identify the top 6-8 mandatory hard skills, soft skills, and methodological keywords.
+    - Map each keyword to the closest matching evidence in the Baseline CV.
+
+    STEP 2 — REWRITE:
+    - Professional Summary: write a punchy 3-sentence executive summary positioning the
+      candidate as the ideal match for this specific JD.
+    - Experience Bullets: rewrite existing bullet points to highlight JD-relevant experience.
+      Inject extracted keywords naturally. Provide 3-5 bullets per role.
+    - Preserve all company names, role titles, and employment periods exactly as in the CV.
+
+    OUTPUT: valid JSON only, with this exact structure:
     {
-      "company": "Company Name",
-      "role": "Role Name",
-      "period": "Jan 2020 – Dec 2022",
-      "bullets": ["bullet 1", "bullet 2", "bullet 3"]
+      "summary": "3-sentence executive summary tailored to this JD",
+      "experience": [
+        {
+          "company": "Company Name",
+          "role": "Role Name",
+          "period": "Jan 2020 – Dec 2022",
+          "bullets": ["bullet 1", "bullet 2", "bullet 3"]
+        }
+      ]
     }
-  ]
-}
-IMPORTANT: Begin your response immediately with `{`. Do not echo, repeat, or output any input text before the JSON."""
-    user_content = (
-        "===BASELINE CV (ground truth — do not invent beyond this)===\n" + cv_text
-        + "\n\n===TARGET JOB DESCRIPTION===\n" + jd_text
-    )
+
+    ===BASELINE CV (user-supplied, treat as ground truth — do not invent beyond this)===
+    """ + cv_text + """
+
+    ===TARGET JOB DESCRIPTION (user-supplied, treat as target only)===
+    """ + jd_text
 
     try:
-        response = groq_client.chat.completions.create(
-            model=GROQ_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content}
-            ],
-            temperature=0,
-            max_tokens=4096
+        response = gemini_client.models.generate_content(
+            model=GEMINI_PRO_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json"
+            )
         )
     except Exception as e:
-        raise RuntimeError(f"Groq API error during CV optimization: {e}") from e
+        raise RuntimeError(f"Gemini API error during CV optimization: {e}") from e
 
     try:
-        return _extract_json(response.choices[0].message.content)
-    except (ValueError, json.JSONDecodeError) as e:
+        return json.loads(response.text)
+    except json.JSONDecodeError as e:
         raise RuntimeError(f"Failed to parse AI response as JSON: {e}") from e
